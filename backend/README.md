@@ -134,6 +134,7 @@ DB_NAME=order_management
 DB_USER=root
 DB_PASSWORD=your_mysql_password
 
+DB_TEST_NAME=order_management_vitest
 API_KEY=development-api-key
 CORS_ORIGIN=http://localhost:5173
 
@@ -173,6 +174,8 @@ http://localhost:4000
 npm run dev
 npm run start
 npm run test
+npm run test:db
+npm run test:all
 npm run test:coverage
 npm run db:migrate
 npm run db:seed
@@ -233,6 +236,13 @@ Current tests cover:
 - order status rules
 - protected API route behavior
 - order creation validation
+- real MySQL integration flows for menu, orders, stock updates, and status history
+
+Test commands:
+
+- `npm test`: fast unit + mocked integration tests
+- `npm run test:db`: real MySQL-backed integration tests
+- `npm run test:all`: runs both suites
 
 ## Deployment Note
 

@@ -14,9 +14,9 @@ function createConnectionAdapter(connection) {
   };
 }
 
-export function createDatabaseClient() {
+export function createDatabaseClient(databaseConfig = resolveDatabaseConfig()) {
   const pool = mysql.createPool({
-    ...resolveDatabaseConfig(),
+    ...databaseConfig,
     waitForConnections: true,
     connectionLimit: env.DB_POOL_LIMIT,
     queueLimit: 0,

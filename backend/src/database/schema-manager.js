@@ -7,10 +7,10 @@ import { resolveDatabaseConfig } from "../config/env.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function ensureDatabaseSchema() {
+export async function ensureDatabaseSchema(databaseConfig = resolveDatabaseConfig()) {
   const schemaPath = path.resolve(__dirname, "../../database/schema.sql");
   const schemaSql = await fs.readFile(schemaPath, "utf8");
-  const { database, ...connectionConfig } = resolveDatabaseConfig();
+  const { database, ...connectionConfig } = databaseConfig;
 
   const connection = await mysql.createConnection({
     ...connectionConfig,
