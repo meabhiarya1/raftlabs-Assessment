@@ -14,8 +14,10 @@
     "start": "node --env-file=.env src/server.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "db:migrate": "node scripts/migrate.js",
-    "db:seed": "node scripts/seed.js",
+    "predb:migrate": "node scripts/ensure-env.js",
+    "db:migrate": "node --env-file=.env scripts/migrate.js",
+    "predb:seed": "node scripts/ensure-env.js",
+    "db:seed": "node --env-file=.env scripts/seed.js",
     "db:setup": "npm run db:migrate && npm run db:seed"
   },
   "dependencies": {

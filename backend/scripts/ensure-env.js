@@ -19,7 +19,7 @@ async function ensureEnvFile() {
   const exampleContents = await fs.readFile(exampleEnvPath, "utf8");
   await fs.writeFile(envPath, exampleContents, "utf8");
 
-  console.log("Created .env from .env.example");
+  console.log("Created .env from .env.example. Update DB values if needed.");
 }
 
 ensureEnvFile().catch((error) => {
