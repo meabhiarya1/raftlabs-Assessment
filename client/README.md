@@ -32,6 +32,13 @@ npm run dev
 npm run build
 ```
 
+## Tests
+
+```bash
+npm test
+npm run test:coverage
+```
+
 The frontend expects the backend routes:
 
 - `GET /api/menu`

@@ -45,10 +45,14 @@ export function CheckoutForm({ disabled, onSubmit }) {
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <label
+          htmlFor="customerName"
+          className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"
+        >
           Full name
         </label>
         <input
+          id="customerName"
           required
           name="customerName"
           value={formValues.customerName}
@@ -59,10 +63,14 @@ export function CheckoutForm({ disabled, onSubmit }) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <label
+          htmlFor="customerAddress"
+          className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"
+        >
           Delivery address
         </label>
         <textarea
+          id="customerAddress"
           required
           name="customerAddress"
           value={formValues.customerAddress}
@@ -74,10 +82,14 @@ export function CheckoutForm({ disabled, onSubmit }) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <label
+          htmlFor="customerPhone"
+          className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"
+        >
           Phone number
         </label>
         <input
+          id="customerPhone"
           required
           name="customerPhone"
           value={formValues.customerPhone}
