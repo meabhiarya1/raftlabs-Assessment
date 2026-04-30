@@ -1,8 +1,9 @@
-import { db } from "../src/lib/mysql.js";
-import { seedMenuCatalog } from "../src/modules/menu/menu.seed.js";
+import { db } from "../src/database/connection.js";
+import { MenuItemModel } from "../src/models/menu-item.model.js";
+import { seedMenuCatalog } from "../src/seeders/menu.seeder.js";
 
 async function main() {
-  await seedMenuCatalog(db);
+  await seedMenuCatalog(new MenuItemModel(db));
   console.log("Menu seed completed.");
 }
 

@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import mysql from "mysql2/promise";
 import { fileURLToPath } from "node:url";
-import { env, resolveDatabaseConfig } from "../config/env.js";
+import { resolveDatabaseConfig } from "../config/env.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

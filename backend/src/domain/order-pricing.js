@@ -1,4 +1,4 @@
-import { ValidationError } from "../../common/errors.js";
+import { ValidationError } from "../common/errors.js";
 
 export function normalizeOrderItems(items) {
   const aggregate = new Map();

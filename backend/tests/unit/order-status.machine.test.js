@@ -4,7 +4,7 @@ import {
   canEditOrderDetails,
   canTransitionStatus,
   getNextAutoStatus
-} from "../../src/modules/orders/order-status.machine.js";
+} from "../../src/domain/order-status.js";
 
 describe("order status machine", () => {
   it("allows only valid forward transitions", () => {
@@ -28,4 +28,3 @@ describe("order status machine", () => {
     expect(canEditOrderDetails("DELIVERED")).toBe(false);
   });
 });
-

@@ -1,8 +1,12 @@
 import { Server as SocketIOServer } from "socket.io";
+import {
+  ORDER_SOCKET_EVENTS,
+  ORDER_SOCKET_ROOM_PREFIX
+} from "../config/constant.js";
 import { env } from "../config/env.js";
 
 export function getOrderRoom(orderId) {
-  return `order:${orderId}`;
+  return `${ORDER_SOCKET_ROOM_PREFIX}${orderId}`;
 }
 
 export function createRealtimeGateway(server, events) {
@@ -13,19 +17,19 @@ export function createRealtimeGateway(server, events) {
   });
 
   io.on("connection", (socket) => {
-    socket.on("order:subscribe", (orderId, ack) => {
+    socket.on(ORDER_SOCKET_EVENTS.subscribe, (orderId, ack) => {
       socket.join(getOrderRoom(orderId));
       ack?.({ ok: true, room: getOrderRoom(orderId) });
     });
 
-    socket.on("order:unsubscribe", (orderId, ack) => {
+    socket.on(ORDER_SOCKET_EVENTS.unsubscribe, (orderId, ack) => {
       socket.leave(getOrderRoom(orderId));
       ack?.({ ok: true, room: getOrderRoom(orderId) });
     });
   });
 
   const unsubscribe = events.onOrderStatusUpdated((order) => {
-    io.to(getOrderRoom(order.id)).emit("order.status.updated", order);
+    io.to(getOrderRoom(order.id)).emit(ORDER_SOCKET_EVENTS.statusUpdated, order);
   });
 
   return {

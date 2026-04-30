@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildApp } from "../../src/app.js";
+import { API_KEY_HEADER } from "../../src/config/constant.js";
+
+const authHeaders = {
+  [API_KEY_HEADER]: "development-api-key"
+};
 
 function createServices() {
   return {
@@ -103,11 +108,25 @@ describe("app routes", () => {
 
     const response = await app.inject({
       method: "GET",
-      url: "/api/menu"
+      url: "/api/menu",
+      headers: authHeaders
     });
 
     expect(response.statusCode).toBe(200);
     expect(response.json().data).toHaveLength(1);
+  });
+
+  it("blocks api routes when api key is missing", async () => {
+    const app = buildApp(createServices());
+    apps.push(app);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/menu"
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.json().error.code).toBe("UNAUTHORIZED");
   });
 
   it("validates order creation payload", async () => {
@@ -117,6 +136,7 @@ describe("app routes", () => {
     const response = await app.inject({
       method: "POST",
       url: "/api/orders",
+      headers: authHeaders,
       payload: {
         customerName: "A",
         customerAddress: "short",
@@ -136,6 +156,7 @@ describe("app routes", () => {
     const response = await app.inject({
       method: "POST",
       url: "/api/orders",
+      headers: authHeaders,
       payload: {
         customerName: "Alex Doe",
         customerAddress: "221B Baker Street, London",

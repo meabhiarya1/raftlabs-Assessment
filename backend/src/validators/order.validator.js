@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ORDER_STATUSES } from "./order-status.machine.js";
+import { ORDER_STATUSES } from "../domain/order-status.js";
 
 const phonePattern = /^[+0-9()\-\s]{7,20}$/;
 
@@ -36,4 +36,3 @@ export const updateOrderStatusSchema = z.object({
   status: z.enum(ORDER_STATUSES),
   notes: z.string().trim().max(250).optional()
 });
-

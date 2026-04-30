@@ -1,4 +1,4 @@
-import { env } from "../../config/env.js";
+import { env } from "../config/env.js";
 
 export class OrderStatusOrchestrator {
   constructor(orderService, logger) {

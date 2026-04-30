@@ -1,4 +1,4 @@
-const defaultMenuItems = [
+export const defaultMenuItems = [
   {
     id: "menu-margherita-pizza",
     slug: "margherita-pizza",
@@ -81,39 +81,6 @@ const defaultMenuItems = [
   }
 ];
 
-export async function seedMenuCatalog(db) {
-  for (const item of defaultMenuItems) {
-    await db.execute(
-      `
-        INSERT INTO menu_items (
-          id,
-          slug,
-          name,
-          description,
-          price_cents,
-          image_url,
-          stock_qty,
-          is_available
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-          name = VALUES(name),
-          description = VALUES(description),
-          price_cents = VALUES(price_cents),
-          image_url = VALUES(image_url),
-          stock_qty = VALUES(stock_qty),
-          is_available = VALUES(is_available)
-      `,
-      [
-        item.id,
-        item.slug,
-        item.name,
-        item.description,
-        item.priceCents,
-        item.imageUrl,
-        item.stockQty,
-        item.isAvailable
-      ]
-    );
-  }
+export async function seedMenuCatalog(menuItemModel, executor) {
+  await menuItemModel.upsertMany(defaultMenuItems, executor);
 }

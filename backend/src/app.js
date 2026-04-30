@@ -1,25 +1,24 @@
 import cors from "@fastify/cors";
 import Fastify from "fastify";
+import { createAppContext } from "./bootstrap/create-app-context.js";
 import { AppError } from "./common/errors.js";
+import { API_PREFIX, ROUTE_PATHS, SERVICE_NAME } from "./config/constant.js";
 import { env } from "./config/env.js";
-import { db } from "./lib/mysql.js";
-import { orderEvents } from "./lib/order-events.js";
-import { menuRoutes } from "./modules/menu/menu.routes.js";
-import { MenuService } from "./modules/menu/menu.service.js";
-import { orderRoutes } from "./modules/orders/orders.routes.js";
-import { OrderService } from "./modules/orders/order.service.js";
+import { verifyApiKey } from "./middleware/api-key.middleware.js";
+import { menuRoutes } from "./routes/menu.routes.js";
+import { orderRoutes } from "./routes/order.routes.js";
 
 export function buildApp(services) {
   const app = Fastify({
     logger: env.NODE_ENV === "test" ? false : { level: env.LOG_LEVEL }
   });
 
-  const resolvedServices = services ?? {
-    menuService: new MenuService(db),
-    orderService: new OrderService(db, orderEvents)
-  };
+  const context = createAppContext(services);
 
-  app.decorate("services", resolvedServices);
+  app.decorate("associations", context.associations);
+  app.decorate("models", context.models ?? {});
+  app.decorate("services", context.services);
+  app.decorate("controllers", context.controllers);
 
   app.register(cors, {
     origin: env.CORS_ORIGINS
@@ -27,12 +26,18 @@ export function buildApp(services) {
 
   app.get("/health", async () => ({
     status: "ok",
-    service: "order-management-api",
+    service: SERVICE_NAME,
     timestamp: new Date().toISOString()
   }));
 
-  app.register(menuRoutes, { prefix: "/api/menu" });
-  app.register(orderRoutes, { prefix: "/api/orders" });
+  app.register(
+    async (apiRoutes) => {
+      apiRoutes.addHook("preHandler", verifyApiKey);
+      apiRoutes.register(menuRoutes, { prefix: ROUTE_PATHS.menu });
+      apiRoutes.register(orderRoutes, { prefix: ROUTE_PATHS.orders });
+    },
+    { prefix: API_PREFIX }
+  );
 
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof AppError) {

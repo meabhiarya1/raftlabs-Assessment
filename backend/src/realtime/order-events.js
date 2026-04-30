@@ -1,4 +1,5 @@
 import { EventEmitter } from "node:events";
+import { ORDER_SOCKET_EVENTS } from "../config/constant.js";
 
 export class OrderEvents {
   constructor() {
@@ -6,14 +7,14 @@ export class OrderEvents {
   }
 
   emitOrderStatusUpdated(order) {
-    this.emitter.emit("order.status.updated", order);
+    this.emitter.emit(ORDER_SOCKET_EVENTS.statusUpdated, order);
   }
 
   onOrderStatusUpdated(listener) {
-    this.emitter.on("order.status.updated", listener);
+    this.emitter.on(ORDER_SOCKET_EVENTS.statusUpdated, listener);
 
     return () => {
-      this.emitter.off("order.status.updated", listener);
+      this.emitter.off(ORDER_SOCKET_EVENTS.statusUpdated, listener);
     };
   }
 }

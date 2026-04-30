@@ -10,6 +10,7 @@ const envSchema = z.object({
   DB_NAME: z.string().min(1).default("order_management"),
   DB_USER: z.string().min(1).default("root"),
   DB_PASSWORD: z.string().default(""),
+  API_KEY: z.string().min(1).default("development-api-key"),
   CORS_ORIGIN: z.string().default("http://localhost:5173"),
   AUTO_MIGRATE_DB: z.coerce.boolean().default(true),
   AUTO_SEED_MENU: z.coerce.boolean().default(true),

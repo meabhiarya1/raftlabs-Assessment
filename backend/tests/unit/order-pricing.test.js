@@ -3,7 +3,7 @@ import {
   buildOrderLineItems,
   calculateSubtotal,
   normalizeOrderItems
-} from "../../src/modules/orders/order.pricing.js";
+} from "../../src/domain/order-pricing.js";
 
 describe("order pricing helpers", () => {
   it("combines duplicate menu items into a single line", () => {
@@ -50,4 +50,3 @@ describe("order pricing helpers", () => {
     expect(calculateSubtotal(lineItems)).toBe(70000);
   });
 });
-

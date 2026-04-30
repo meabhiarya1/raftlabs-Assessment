@@ -1,10 +1,10 @@
 import { prepareRuntime } from "./bootstrap/prepare-runtime.js";
 import { buildApp } from "./app.js";
 import { env } from "./config/env.js";
-import { db } from "./lib/mysql.js";
-import { orderEvents } from "./lib/order-events.js";
-import { createRealtimeGateway } from "./lib/realtime-gateway.js";
-import { OrderStatusOrchestrator } from "./modules/orders/order-status-orchestrator.js";
+import { db } from "./database/connection.js";
+import { orderEvents } from "./realtime/order-events.js";
+import { OrderStatusOrchestrator } from "./realtime/order-status-orchestrator.js";
+import { createRealtimeGateway } from "./realtime/socket-gateway.js";
 
 async function bootstrap() {
   const app = buildApp();

@@ -1,30 +1,25 @@
 # Order Management Backend
 
-JavaScript backend for the food delivery order management assessment.
+Backend for the food delivery assessment.
 
-This service exposes menu and order APIs, stores data in MySQL, pushes live order status updates through Socket.IO, and auto-prepares the local environment so the project is easy to run for a reviewer or interviewer.
+The backend is now organized in a clean layered flow:
 
-## What This Backend Includes
+```text
+route -> middleware -> controller -> service -> model -> database
+```
 
-- REST APIs for menu and order management
-- MySQL persistence using `mysql2/promise`
-- WebSocket-based live order tracking with Socket.IO
-- automatic `.env` creation from `.env.example` if `.env` is missing
-- automatic database and table creation on startup
-- automatic menu seeding when the menu table is empty
-- unit and integration tests with Vitest
+This keeps the code easier to read, explain, and extend.
 
-## Tech Stack
+## Stack
 
 - Node.js 20+
-- JavaScript with ESM modules
 - Fastify
 - MySQL
 - Socket.IO
 - Zod
 - Vitest
 
-## Project Structure
+## Folder Structure
 
 ```text
 backend/
@@ -35,93 +30,98 @@ backend/
 │   ├── migrate.js
 │   └── seed.js
 ├── src/
+│   ├── associations/
 │   ├── bootstrap/
 │   ├── common/
 │   ├── config/
+│   ├── controllers/
 │   ├── database/
-│   ├── lib/
-│   └── modules/
+│   ├── domain/
+│   ├── middleware/
+│   ├── models/
+│   ├── realtime/
+│   ├── routes/
+│   ├── seeders/
+│   ├── services/
+│   ├── validators/
+│   ├── app.js
+│   └── server.js
 ├── tests/
 │   ├── integration/
 │   └── unit/
+├── .env
 ├── .env.example
 ├── package.json
 └── README.md
 ```
 
-## How The App Starts
+## Request Flow
 
-When you run `npm run dev` or `npm start`, the backend follows this flow:
+### 1. Routes
 
-1. Check whether `.env` exists.
-2. If `.env` is missing, copy `.env.example` into `.env`.
-3. Load environment variables from `.env`.
-4. Connect to MySQL.
-5. Create the database if needed.
-6. Create all required tables from `database/schema.sql`.
-7. Seed menu data if the `menu_items` table is empty.
-8. Start the HTTP API and Socket.IO server.
-9. Start the order status simulator if it is enabled.
+Routes only define endpoints.
 
-This keeps the local and EC2 setup very small. In most cases, only the `.env` values need to be adjusted.
+- [menu.routes.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/routes/menu.routes.js)
+- [order.routes.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/routes/order.routes.js)
 
-## Prerequisites
+### 2. Middleware
 
-- Node.js `20` or newer
-- MySQL running locally or remotely
-- a MySQL user with permission to:
-  - connect to MySQL
-  - create a database when `AUTO_MIGRATE_DB=true`
-  - create tables
-  - read and write application data
+All `/api/*` routes are protected by API key middleware.
 
-## Quick Start
+- [api-key.middleware.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/middleware/api-key.middleware.js)
 
-From the `backend/` folder:
-
-```bash
-npm install
-npm run dev
-```
-
-Default local URL:
+The client must send:
 
 ```text
-http://localhost:4000
+x-api-key: your_api_key
 ```
 
-If `.env` is missing, it is created automatically from `.env.example`. After that, update the database values in `.env` if your MySQL credentials are different from the example values.
+### 3. Controllers
+
+Controllers handle request/response and validation handoff.
+
+- [menu.controller.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/controllers/menu.controller.js)
+- [order.controller.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/controllers/order.controller.js)
+
+### 4. Services
+
+Services contain the business logic.
+
+- [menu.service.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/services/menu.service.js)
+- [order.service.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/services/order.service.js)
+
+### 5. Models
+
+Models contain direct SQL and database operations.
+
+- [menu-item.model.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/models/menu-item.model.js)
+- [order.model.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/models/order.model.js)
+- [order-item.model.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/models/order-item.model.js)
+- [order-status-history.model.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/models/order-status-history.model.js)
+
+### 6. Associations
+
+Associations are stored as readable metadata for the model relationships.
+
+- [index.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/associations/index.js)
+- [menu.associations.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/associations/menu.associations.js)
+- [order.associations.js](/Users/abhishekkumar/Desktop/raftlabs-Assessment/backend/src/associations/order.associations.js)
+
+## What The Backend Does
+
+- returns menu items
+- creates orders
+- lists orders
+- returns a single order with items and status history
+- updates order details
+- updates order status
+- cancels an order
+- simulates live order status progression
+- pushes real-time status updates through Socket.IO
 
 ## Environment Variables
 
-The backend uses `.env` for local and server configuration.
-
-### Required for most setups
-
-- `DB_HOST`: MySQL host
-- `DB_PORT`: MySQL port
-- `DB_NAME`: database name
-- `DB_USER`: MySQL username
-- `DB_PASSWORD`: MySQL password
-
-### Common app settings
-
-- `NODE_ENV`: `development`, `test`, or `production`
-- `HOST`: API bind host
-- `PORT`: API port
-- `CORS_ORIGIN`: allowed frontend origin
-- `LOG_LEVEL`: Fastify log level
-
-### Runtime automation flags
-
-- `AUTO_MIGRATE_DB`: create database and tables automatically
-- `AUTO_SEED_MENU`: insert seed menu data if empty
-- `ORDER_STATUS_SIMULATION_ENABLED`: enable automatic status progression
-- `ORDER_STATUS_STEP_MS`: minimum wait between each status transition
-- `STATUS_POLL_INTERVAL_MS`: how often the scheduler checks pending orders
-- `DB_POOL_LIMIT`: MySQL connection pool size
-
-### Example `.env`
+Important values in `.env`:
 
 ```env
 NODE_ENV=development
@@ -134,7 +134,9 @@ DB_NAME=order_management
 DB_USER=root
 DB_PASSWORD=your_mysql_password
 
+API_KEY=development-api-key
 CORS_ORIGIN=http://localhost:5173
+
 AUTO_MIGRATE_DB=true
 AUTO_SEED_MENU=true
 ORDER_STATUS_SIMULATION_ENABLED=true
@@ -146,18 +148,30 @@ LOG_LEVEL=info
 
 Notes:
 
-- `CORS_ORIGIN` supports comma-separated URLs.
-- `.env` is only auto-created when missing.
-- an existing `.env` is never overwritten.
+- `.env` is auto-created from `.env.example` if missing
+- existing `.env` is never overwritten
+- all `/api/*` routes require `x-api-key`
 
-## Available Scripts
+## Local Run
 
-Run these from `backend/`.
+From `backend/`:
+
+```bash
+npm install
+npm run dev
+```
+
+Default URL:
+
+```text
+http://localhost:4000
+```
+
+## Scripts
 
 ```bash
 npm run dev
 npm run start
-npm run build
 npm run test
 npm run test:coverage
 npm run db:migrate
@@ -165,35 +179,28 @@ npm run db:seed
 npm run db:setup
 ```
 
-What they do:
+## Startup Flow
 
-- `npm run dev`: create `.env` if needed, load it, and start the backend in watch mode
-- `npm run start`: create `.env` if needed, load it, and start the backend normally
-- `npm run build`: placeholder only, no build step is required for this JavaScript backend
-- `npm run test`: run the Vitest test suite
-- `npm run test:coverage`: run tests with coverage
-- `npm run db:migrate`: create the database and tables from `database/schema.sql`
-- `npm run db:seed`: seed the menu catalog
-- `npm run db:setup`: run migrate and seed together
+When the app starts:
 
-`npm run db:migrate` and `npm run db:seed` also create `.env` automatically if it is missing.
+1. `.env` is created if missing
+2. environment variables are loaded
+3. MySQL connection is prepared
+4. database and tables are created if enabled
+5. menu is seeded if enabled
+6. API server starts
+7. Socket.IO starts
+8. order status simulation starts
 
-## API Overview
+## API Routes
 
-### Health
+Public:
 
 - `GET /health`
 
-Returns a simple status response so hosting platforms or interviewers can confirm the backend is alive.
-
-### Menu
+Protected with `x-api-key`:
 
 - `GET /api/menu`
-
-Returns the seeded menu items available for ordering.
-
-### Orders
-
 - `GET /api/orders`
 - `GET /api/orders/:orderId`
 - `POST /api/orders`
@@ -201,90 +208,18 @@ Returns the seeded menu items available for ordering.
 - `PATCH /api/orders/:orderId/status`
 - `DELETE /api/orders/:orderId`
 
-## Example Create Order Payload
+## Real-Time Events
 
-`POST /api/orders`
-
-```json
-{
-  "customerName": "Abhishek Kumar",
-  "customerAddress": "221B Baker Street, London, NW1 6XE",
-  "customerPhone": "+91 9876543210",
-  "items": [
-    {
-      "menuItemId": "menu-margherita-pizza",
-      "quantity": 2
-    },
-    {
-      "menuItemId": "menu-garlic-bread",
-      "quantity": 1
-    }
-  ]
-}
-```
-
-Important validation rules:
-
-- customer name must be at least 2 characters
-- address must be at least 10 characters
-- phone number must match the allowed phone pattern
-- each item must include a valid `menuItemId`
-- quantity must be between `1` and `20`
-- the order must contain at least one item
-
-## Order Status Flow
-
-Supported statuses:
-
-```text
-RECEIVED
-PREPARING
-OUT_FOR_DELIVERY
-DELIVERED
-CANCELLED
-```
-
-Normal automatic progression:
-
-```text
-RECEIVED -> PREPARING -> OUT_FOR_DELIVERY -> DELIVERED
-```
-
-Business rules:
-
-- order details can be edited only while the order is `RECEIVED` or `PREPARING`
-- cancellation is allowed only while the order is `RECEIVED` or `PREPARING`
-- once an order is `DELIVERED` or `CANCELLED`, it becomes terminal
-
-## WebSocket Events
-
-The backend uses Socket.IO for live tracking.
-
-### Client emits
+Client emits:
 
 - `order:subscribe`
 - `order:unsubscribe`
 
-The client joins an order-specific room using the `orderId`.
-
-### Server emits
+Server emits:
 
 - `order.status.updated`
 
-The payload is the latest order object after a status change.
-
-## Manual Database Commands
-
-If you want to prepare the database before starting the server:
-
-```bash
-npm run db:migrate
-npm run db:seed
-```
-
-This is optional when `AUTO_MIGRATE_DB=true` and `AUTO_SEED_MENU=true`, because startup already handles both.
-
-## Testing
+## Tests
 
 Run:
 
@@ -292,62 +227,19 @@ Run:
 npm test
 ```
 
-Current test coverage focuses on:
+Current tests cover:
 
 - order pricing helpers
-- order status transition rules
-- API route behavior
+- order status rules
+- protected API route behavior
+- order creation validation
 
-## AWS Deployment Notes
+## Deployment Note
 
-Recommended deployment for this project:
+For deployment, only `.env` values need to be set correctly on the server.
 
-- Frontend: Netlify
-- Backend: AWS EC2 or AWS App Runner
-- Database: AWS RDS MySQL
+Recommended production setup:
 
-### Minimal EC2 Flow
-
-1. Clone the repository on the EC2 instance.
-2. Go to `backend/`.
-3. Run `npm install`.
-4. Review `.env` values.
-5. Run `npm start`.
-
-Because the backend auto-creates `.env`, auto-prepares the schema, and auto-seeds the menu, the deployment setup stays simple.
-
-### Production Advice
-
-- set `NODE_ENV=production`
-- set `CORS_ORIGIN` to your Netlify domain
-- use an RDS MySQL user with the correct permissions
-- if the DB user cannot create databases, create the database manually and set `AUTO_MIGRATE_DB=false`
-
-## Troubleshooting
-
-### Access denied for user
-
-If you see a MySQL error like `Access denied for user 'root'@'localhost'`:
-
-- check `DB_USER`
-- check `DB_PASSWORD`
-- confirm MySQL is running
-- confirm the user has permission to connect from that host
-
-### Port already in use
-
-If port `4000` is already occupied, change:
-
-```env
-PORT=4000
-```
-
-to another port in `.env`.
-
-### Frontend cannot connect
-
-Check:
-
-- `CORS_ORIGIN` matches the frontend URL
-- the frontend uses the correct API base URL
-- the frontend uses the correct Socket.IO server URL
+- frontend on Netlify
+- backend on EC2 or App Runner
+- database on AWS RDS MySQL
