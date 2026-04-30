@@ -1,0 +1,48 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #111318;
+  background:
+    radial-gradient(circle at top left, rgba(247, 190, 56, 0.22), transparent 26%),
+    radial-gradient(circle at 80% 10%, rgba(47, 111, 84, 0.18), transparent 24%),
+    linear-gradient(180deg, #fffaf3 0%, #f6f2ea 100%);
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: #111318;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.display-font {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+}
+
+.glass-panel {
+  background: rgba(255, 252, 247, 0.9);
+  backdrop-filter: blur(16px);
+}
