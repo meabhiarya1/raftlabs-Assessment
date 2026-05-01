@@ -69,7 +69,7 @@ export function AppShell({
           </div>
         </header>
 
-        <div className="grid gap-6 xl:grid-cols-[1.45fr,0.95fr]">{children}</div>
+        <div className="space-y-6">{children}</div>
       </div>
     </div>
   );

@@ -163,64 +163,66 @@ export default function App() {
       trackerStatus={trackerStatus}
       onRefreshOrder={() => loadOrder(trackedOrderId, { silent: false })}
     >
-      <section className="space-y-6">
-        <SectionHeading
-          eyebrow="Menu"
-          title="Crafted comfort food, built for a smooth demo."
-          description="Browse the seeded catalog from your backend, build a cart, and place a live order without leaving the page."
-        />
+      <OrderTracker
+        order={trackedOrder}
+        trackedOrderId={trackedOrderId}
+        trackerStatus={trackerStatus}
+        onTrackOrder={handleTrackOrder}
+        onRealtimeUpdate={handleRealtimeOrderUpdate}
+        onRefreshOrder={() => loadOrder(trackedOrderId, { silent: false })}
+      />
 
-        {menuStatus.loading ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div
-                key={index}
-                className="glass-panel h-72 animate-pulse rounded-4xl border border-white/70 shadow-panel"
-              />
-            ))}
-          </div>
-        ) : null}
-
-        {!menuStatus.loading && menuStatus.error ? (
-          <EmptyState
-            title="Menu unavailable"
-            description={menuStatus.error}
-            actionLabel="Try again"
-            onAction={loadMenu}
+      <div className="grid gap-6 xl:grid-cols-[1.45fr,0.95fr]">
+        <section className="space-y-6">
+          <SectionHeading
+            eyebrow="Menu"
+            title="Crafted comfort food, built for a smooth demo."
+            description="Browse the seeded catalog from your backend, build a cart, and place a live order without leaving the page."
           />
-        ) : null}
 
-        {!menuStatus.loading && !menuStatus.error && filteredMenuItems.length === 0 ? (
-          <EmptyState
-            title="No dishes matched that search"
-            description="Try a broader keyword like pizza, shake, or burger."
+          {menuStatus.loading ? (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="glass-panel h-72 animate-pulse rounded-4xl border border-white/70 shadow-panel"
+                />
+              ))}
+            </div>
+          ) : null}
+
+          {!menuStatus.loading && menuStatus.error ? (
+            <EmptyState
+              title="Menu unavailable"
+              description={menuStatus.error}
+              actionLabel="Try again"
+              onAction={loadMenu}
+            />
+          ) : null}
+
+          {!menuStatus.loading && !menuStatus.error && filteredMenuItems.length === 0 ? (
+            <EmptyState
+              title="No dishes matched that search"
+              description="Try a broader keyword like pizza, shake, or burger."
+            />
+          ) : null}
+
+          {!menuStatus.loading && !menuStatus.error && filteredMenuItems.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {filteredMenuItems.map((item) => (
+                <MenuCard key={item.id} item={item} />
+              ))}
+            </div>
+          ) : null}
+        </section>
+
+        <aside className="space-y-6 xl:sticky xl:top-6">
+          <CartPanel
+            onCheckout={handleCheckout}
+            checkoutStatus={checkoutStatus}
           />
-        ) : null}
-
-        {!menuStatus.loading && !menuStatus.error && filteredMenuItems.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredMenuItems.map((item) => (
-              <MenuCard key={item.id} item={item} />
-            ))}
-          </div>
-        ) : null}
-      </section>
-
-      <aside className="space-y-6 xl:sticky xl:top-6">
-        <CartPanel
-          onCheckout={handleCheckout}
-          checkoutStatus={checkoutStatus}
-        />
-
-        <OrderTracker
-          order={trackedOrder}
-          trackedOrderId={trackedOrderId}
-          trackerStatus={trackerStatus}
-          onTrackOrder={handleTrackOrder}
-          onRealtimeUpdate={handleRealtimeOrderUpdate}
-          onRefreshOrder={() => loadOrder(trackedOrderId, { silent: false })}
-        />
-      </aside>
+        </aside>
+      </div>
     </AppShell>
   );
 }

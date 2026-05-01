@@ -113,6 +113,8 @@ describe("App", () => {
       await screen.findByText(/is confirmed and now being tracked live/i)
     ).toBeInTheDocument();
     expect(screen.getByText("Tracking order-12")).toBeInTheDocument();
+    expect(screen.getByText(/tracking order-12 with status received/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Expand tracker" }));
     expect(screen.getByText("Order created")).toBeInTheDocument();
     expect(createOrderSocket).toHaveBeenCalled();
   });

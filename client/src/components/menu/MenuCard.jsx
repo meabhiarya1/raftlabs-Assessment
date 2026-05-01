@@ -7,7 +7,7 @@ export function MenuCard({ item }) {
   const isAtStockLimit = cartItem ? cartItem.quantity >= item.stockQty : false;
 
   return (
-    <article className="glass-panel overflow-hidden rounded-4xl border border-white/70 shadow-panel transition duration-200 hover:-translate-y-1">
+    <article className="glass-panel flex h-full flex-col overflow-hidden rounded-4xl border border-white/70 shadow-panel transition duration-200 hover:-translate-y-1">
       <div className="relative h-48 overflow-hidden">
         <img
           src={item.imageUrl}
@@ -25,7 +25,7 @@ export function MenuCard({ item }) {
         </div>
       </div>
 
-      <div className="space-y-4 p-5">
+      <div className="flex flex-1 flex-col space-y-4 p-5">
         <div className="space-y-2">
           <h3 className="display-font text-xl font-bold text-ink">{item.name}</h3>
           <p className="text-sm leading-7 text-slate-600">{item.description}</p>
@@ -35,7 +35,7 @@ export function MenuCard({ item }) {
           type="button"
           onClick={() => addItem(item)}
           disabled={!item.isAvailable || isAtStockLimit}
-          className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-night disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="mt-auto w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-night disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           {!item.isAvailable
             ? "Unavailable"

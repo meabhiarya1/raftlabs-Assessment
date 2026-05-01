@@ -107,6 +107,7 @@ describe("OrderTracker", () => {
       />
     );
 
+    await user.click(screen.getByRole("button", { name: "Expand tracker" }));
     await user.type(screen.getByPlaceholderText("Paste order id"), "order-999");
     await user.click(screen.getByRole("button", { name: "Load" }));
 
