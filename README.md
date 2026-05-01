@@ -16,8 +16,8 @@ Update these before submission if any URL changes.
 | --- | --- |
 | Live App | `http://13.60.189.28/` |
 | Backend Health | `http://13.60.189.28/health` |
-| Demo Video 1 | `Add Loom link here` |
-| Demo Video 2 | `Add extra demo link here if needed` |
+[[| Demo Video 1 | `Add Loom link here` |](https://www.loom.com/share/63b9428431b74ff79cfaf1b6d49d6bf6)
+| Demo Video 2 | `Add extra demo link here if needed` |](https://www.loom.com/share/63b9428431b74ff79cfaf1b6d49d6bf6)
 
 Note:
 
