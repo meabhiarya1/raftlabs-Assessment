@@ -16,7 +16,6 @@ Update these before submission if any URL changes.
 | --- | --- |
 | Live App | `http://13.60.189.28/` |
 | Backend Health | `http://13.60.189.28/health` |
-
 | Demo Link | `https://drive.google.com/file/d/1jU3_cwv_29StgroznUIYB_A-aOvKAGYi/view?usp=sharing` |
 
 Note:
