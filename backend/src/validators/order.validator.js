@@ -3,7 +3,7 @@ import { ORDER_STATUSES } from "../domain/order-status.js";
 
 const customerNamePattern = /^[A-Za-z\s]+$/;
 const customerAddressPattern = /^[A-Za-z0-9\s,./#-]+$/;
-const phonePattern = /^\d{10}$/;
+const phoneDigitsPattern = /^\d+$/;
 
 const customerNameSchema = z
   .string()
@@ -22,7 +22,8 @@ const customerAddressSchema = z
 const customerPhoneSchema = z
   .string()
   .trim()
-  .regex(phonePattern, "Mobile number must be exactly 10 digits.");
+  .regex(phoneDigitsPattern, "Mobile number must contain only digits.")
+  .length(10, "Mobile number must be exactly 10 digits.");
 
 export const orderIdParamSchema = z.object({
   orderId: z.string().min(1)

@@ -155,6 +155,28 @@ describe("app routes", () => {
     );
   });
 
+  it("shows a digit-only validation error before phone length errors", async () => {
+    const app = buildApp(createServices());
+    apps.push(app);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/orders",
+      headers: authHeaders,
+      payload: {
+        customerName: "Alex Doe",
+        customerAddress: "221B Baker Street, London",
+        customerPhone: "62019508jj",
+        items: [{ menuItemId: "pizza-1", quantity: 1 }]
+      }
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json().error.details.fieldErrors.customerPhone[0]).toBe(
+      "Mobile number must contain only digits."
+    );
+  });
+
   it("creates an order when payload is valid", async () => {
     const app = buildApp(createServices());
     apps.push(app);
