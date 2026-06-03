@@ -14,8 +14,8 @@ Update these before submission if any URL changes.
 
 | Item | Link |
 | --- | --- |
-| Live App | `http://13.60.189.28/` |
-| Backend Health | `http://13.60.189.28/health` |
+| Live App | `http://51.20.41.216/` |
+| Backend Health | `http://51.20.41.216/health` |
 | Demo Link | `https://drive.google.com/file/d/1jU3_cwv_29StgroznUIYB_A-aOvKAGYi/view?usp=sharing` |
 
 Note:
@@ -167,7 +167,7 @@ Server emits:
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/meabhiarya1/raftlabs-Assessment/
 cd raftlabs-Assessment
 ```
 
