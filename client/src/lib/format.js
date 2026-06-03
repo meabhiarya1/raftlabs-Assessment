@@ -32,3 +32,7 @@ export function getErrorMessage(error, fallbackMessage) {
     fallbackMessage
   );
 }
+
+export function getValidationFieldErrors(error) {
+  return error?.response?.data?.error?.details?.fieldErrors || {};
+}

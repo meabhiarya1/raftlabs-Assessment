@@ -33,7 +33,7 @@ const baseOrder = {
   id: "order-1234",
   customerName: "Abhishek Kumar",
   customerAddress: "221B Baker Street, London",
-  customerPhone: "+919999999999",
+  customerPhone: "9999999999",
   status: "PREPARING",
   totalCents: 34900,
   statusHistory: [

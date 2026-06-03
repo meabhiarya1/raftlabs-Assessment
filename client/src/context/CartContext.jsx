@@ -16,12 +16,20 @@ function readStoredCart() {
 function cartReducer(state, action) {
   switch (action.type) {
     case "ADD_ITEM": {
+      if (!action.payload.isAvailable || action.payload.stockQty <= 0) {
+        return state;
+      }
+
       const existingItem = state.find((item) => item.id === action.payload.id);
 
       if (existingItem) {
         return state.map((item) =>
           item.id === action.payload.id
-            ? { ...item, quantity: Math.min(item.quantity + 1, action.payload.stockQty) }
+            ? {
+                ...item,
+                ...action.payload,
+                quantity: Math.min(item.quantity + 1, action.payload.stockQty)
+              }
             : item
         );
       }

@@ -17,7 +17,7 @@ async function createOrder(app, payload = {}) {
     payload: {
       customerName: "Alex Doe",
       customerAddress: "221B Baker Street, London",
-      customerPhone: "+1234567890",
+      customerPhone: "1234567890",
       items: [{ menuItemId: "menu-margherita-pizza", quantity: 2 }],
       ...payload
     }

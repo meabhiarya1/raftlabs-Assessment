@@ -12,7 +12,7 @@ const formStorageKeys = {
   customerPhone: "order-management:customer-phone"
 };
 
-export function CheckoutForm({ disabled, onSubmit }) {
+export function CheckoutForm({ disabled, fieldErrors = {}, resetSignal, onSubmit }) {
   const [formValues, setFormValues] = useState(initialFormState);
 
   useEffect(() => {
@@ -26,6 +26,17 @@ export function CheckoutForm({ disabled, onSubmit }) {
       customerPhone: storedPhone || ""
     });
   }, []);
+
+  useEffect(() => {
+    if (!resetSignal) {
+      return;
+    }
+
+    setFormValues(initialFormState);
+    Object.values(formStorageKeys).forEach((storageKey) => {
+      window.localStorage.removeItem(storageKey);
+    });
+  }, [resetSignal]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -42,8 +53,21 @@ export function CheckoutForm({ disabled, onSubmit }) {
     onSubmit(formValues);
   }
 
+  function getFieldError(name) {
+    return fieldErrors[name]?.[0] || "";
+  }
+
+  function getInputClassName(name) {
+    const hasError = Boolean(getFieldError(name));
+
+    return [
+      "w-full rounded-2xl border bg-white px-4 py-3 outline-none transition focus:border-amber-400",
+      hasError ? "border-rose-300 focus:border-rose-400" : "border-slate-200"
+    ].join(" ");
+  }
+
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+    <form className="space-y-4" noValidate onSubmit={handleSubmit}>
       <div className="space-y-2">
         <label
           htmlFor="customerName"
@@ -57,9 +81,16 @@ export function CheckoutForm({ disabled, onSubmit }) {
           name="customerName"
           value={formValues.customerName}
           onChange={handleChange}
-          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-amber-400"
+          aria-invalid={Boolean(getFieldError("customerName"))}
+          aria-describedby={getFieldError("customerName") ? "customerName-error" : undefined}
+          className={getInputClassName("customerName")}
           placeholder="Abhishek Kumar"
         />
+        {getFieldError("customerName") ? (
+          <p id="customerName-error" className="text-sm font-medium text-rose-600">
+            {getFieldError("customerName")}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
@@ -76,9 +107,18 @@ export function CheckoutForm({ disabled, onSubmit }) {
           value={formValues.customerAddress}
           onChange={handleChange}
           rows={3}
-          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-amber-400"
+          aria-invalid={Boolean(getFieldError("customerAddress"))}
+          aria-describedby={
+            getFieldError("customerAddress") ? "customerAddress-error" : undefined
+          }
+          className={getInputClassName("customerAddress")}
           placeholder="Flat, area, city, pin code"
         />
+        {getFieldError("customerAddress") ? (
+          <p id="customerAddress-error" className="text-sm font-medium text-rose-600">
+            {getFieldError("customerAddress")}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
@@ -94,9 +134,19 @@ export function CheckoutForm({ disabled, onSubmit }) {
           name="customerPhone"
           value={formValues.customerPhone}
           onChange={handleChange}
-          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-amber-400"
-          placeholder="+91 99999 99999"
+          inputMode="numeric"
+          maxLength={10}
+          pattern="[0-9]{10}"
+          aria-invalid={Boolean(getFieldError("customerPhone"))}
+          aria-describedby={getFieldError("customerPhone") ? "customerPhone-error" : undefined}
+          className={getInputClassName("customerPhone")}
+          placeholder="9999999999"
         />
+        {getFieldError("customerPhone") ? (
+          <p id="customerPhone-error" className="text-sm font-medium text-rose-600">
+            {getFieldError("customerPhone")}
+          </p>
+        ) : null}
       </div>
 
       <button

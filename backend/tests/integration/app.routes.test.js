@@ -29,7 +29,7 @@ function createServices() {
         id: "order-1",
         customerName: "Alex Doe",
         customerAddress: "221B Baker Street, London",
-        customerPhone: "+1234567890",
+        customerPhone: "1234567890",
         status: "RECEIVED",
         subtotalCents: 34900,
         totalCents: 34900,
@@ -42,7 +42,7 @@ function createServices() {
         id: "order-1",
         customerName: "Alex Doe",
         customerAddress: "221B Baker Street, London",
-        customerPhone: "+1234567890",
+        customerPhone: "1234567890",
         status: "RECEIVED",
         subtotalCents: 34900,
         totalCents: 34900,
@@ -55,7 +55,7 @@ function createServices() {
         id: "order-1",
         customerName: "Updated Name",
         customerAddress: "Updated Address 123456",
-        customerPhone: "+1234567890",
+        customerPhone: "1234567890",
         status: "RECEIVED",
         subtotalCents: 34900,
         totalCents: 34900,
@@ -68,7 +68,7 @@ function createServices() {
         id: "order-1",
         customerName: "Alex Doe",
         customerAddress: "221B Baker Street, London",
-        customerPhone: "+1234567890",
+        customerPhone: "1234567890",
         status: "PREPARING",
         subtotalCents: 34900,
         totalCents: 34900,
@@ -81,7 +81,7 @@ function createServices() {
         id: "order-1",
         customerName: "Alex Doe",
         customerAddress: "221B Baker Street, London",
-        customerPhone: "+1234567890",
+        customerPhone: "1234567890",
         status: "CANCELLED",
         subtotalCents: 34900,
         totalCents: 34900,
@@ -138,7 +138,7 @@ describe("app routes", () => {
       url: "/api/orders",
       headers: authHeaders,
       payload: {
-        customerName: "A",
+        customerName: "Alex 123",
         customerAddress: "short",
         customerPhone: "123",
         items: []
@@ -147,6 +147,12 @@ describe("app routes", () => {
 
     expect(response.statusCode).toBe(400);
     expect(response.json().error.code).toBe("VALIDATION_ERROR");
+    expect(response.json().error.details.fieldErrors.customerName).toContain(
+      "Full name must contain only letters and spaces."
+    );
+    expect(response.json().error.details.fieldErrors.customerPhone).toContain(
+      "Mobile number must be exactly 10 digits."
+    );
   });
 
   it("creates an order when payload is valid", async () => {
@@ -160,7 +166,7 @@ describe("app routes", () => {
       payload: {
         customerName: "Alex Doe",
         customerAddress: "221B Baker Street, London",
-        customerPhone: "+1234567890",
+        customerPhone: "1234567890",
         items: [{ menuItemId: "pizza-1", quantity: 2 }]
       }
     });

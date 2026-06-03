@@ -66,13 +66,13 @@ describe("CartPanel", () => {
 
     await user.type(screen.getByLabelText("Full name"), "Abhishek Kumar");
     await user.type(screen.getByLabelText("Delivery address"), "221B Baker Street, London");
-    await user.type(screen.getByLabelText("Phone number"), "+919999999999");
+    await user.type(screen.getByLabelText("Phone number"), "9999999999");
     await user.click(screen.getByRole("button", { name: "Place order" }));
 
     expect(onCheckout).toHaveBeenCalledWith({
       customerName: "Abhishek Kumar",
       customerAddress: "221B Baker Street, London",
-      customerPhone: "+919999999999"
+      customerPhone: "9999999999"
     });
   });
 });

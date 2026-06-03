@@ -117,6 +117,8 @@ export function CartPanel({ onCheckout, checkoutStatus }) {
 
         <CheckoutForm
           disabled={checkoutStatus.loading}
+          fieldErrors={checkoutStatus.fieldErrors}
+          resetSignal={checkoutStatus.completedOrderId}
           onSubmit={onCheckout}
         />
       </div>

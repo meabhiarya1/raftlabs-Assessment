@@ -45,11 +45,19 @@ const sampleMenu = [
   }
 ];
 
+const menuAfterOrder = [
+  {
+    ...sampleMenu[0],
+    stockQty: 9
+  },
+  sampleMenu[1]
+];
+
 const createdOrder = {
   id: "order-12345678",
   customerName: "Abhishek Kumar",
   customerAddress: "221B Baker Street, London",
-  customerPhone: "+919999999999",
+  customerPhone: "9999999999",
   status: "RECEIVED",
   subtotalCents: 34900,
   totalCents: 34900,
@@ -79,7 +87,9 @@ const createdOrder = {
 describe("App", () => {
   it("loads the menu, filters it, and places an order", async () => {
     const user = userEvent.setup();
-    api.get.mockResolvedValueOnce({ data: { data: sampleMenu } });
+    api.get
+      .mockResolvedValueOnce({ data: { data: sampleMenu } })
+      .mockResolvedValueOnce({ data: { data: menuAfterOrder } });
     api.post.mockResolvedValueOnce({ data: { data: createdOrder } });
     createOrderSocket.mockClear();
 
@@ -97,14 +107,14 @@ describe("App", () => {
 
     await user.type(screen.getByLabelText("Full name"), "Abhishek Kumar");
     await user.type(screen.getByLabelText("Delivery address"), "221B Baker Street, London");
-    await user.type(screen.getByLabelText("Phone number"), "+919999999999");
+    await user.type(screen.getByLabelText("Phone number"), "9999999999");
     await user.click(screen.getByRole("button", { name: "Place order" }));
 
     await waitFor(() => {
       expect(api.post).toHaveBeenCalledWith("/orders", {
         customerName: "Abhishek Kumar",
         customerAddress: "221B Baker Street, London",
-        customerPhone: "+919999999999",
+        customerPhone: "9999999999",
         items: [{ menuItemId: "menu-margherita-pizza", quantity: 1 }]
       });
     });
@@ -112,10 +122,57 @@ describe("App", () => {
     expect(
       await screen.findByText(/is confirmed and now being tracked live/i)
     ).toBeInTheDocument();
+    expect(await screen.findByText("9 left")).toBeInTheDocument();
     expect(screen.getByText("Tracking order-12")).toBeInTheDocument();
     expect(screen.getByText(/tracking order-12 with status received/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText("Full name")).toHaveValue("");
+      expect(screen.getByLabelText("Delivery address")).toHaveValue("");
+      expect(screen.getByLabelText("Phone number")).toHaveValue("");
+    });
+    expect(window.localStorage.getItem("order-management:customer-name")).toBeNull();
+    expect(window.localStorage.getItem("order-management:customer-address")).toBeNull();
+    expect(window.localStorage.getItem("order-management:customer-phone")).toBeNull();
+    expect(window.localStorage.getItem("order-management:last-order-id")).toBe(createdOrder.id);
     await user.click(screen.getByRole("button", { name: "Expand tracker" }));
     expect(screen.getByText("Order created")).toBeInTheDocument();
     expect(createOrderSocket).toHaveBeenCalled();
+  });
+
+  it("shows backend checkout field validation errors to the user", async () => {
+    const user = userEvent.setup();
+    api.get.mockResolvedValueOnce({ data: { data: sampleMenu } });
+    api.post.mockRejectedValueOnce({
+      response: {
+        data: {
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "Request validation failed",
+            details: {
+              formErrors: [],
+              fieldErrors: {
+                customerPhone: ["Mobile number must be exactly 10 digits."]
+              }
+            }
+          }
+        }
+      }
+    });
+
+    renderWithCart(<App />);
+
+    expect(await screen.findByText("Margherita Pizza")).toBeInTheDocument();
+    await user.click(screen.getAllByRole("button", { name: "Add to cart" })[0]);
+
+    await user.type(screen.getByLabelText("Full name"), "Abhishek Kumar");
+    await user.type(screen.getByLabelText("Delivery address"), "221B Baker Street, London");
+    await user.type(screen.getByLabelText("Phone number"), "123");
+    await user.click(screen.getByRole("button", { name: "Place order" }));
+
+    expect(await screen.findByText("Mobile number must be exactly 10 digits.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Phone number")).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText("Full name")).toHaveValue("Abhishek Kumar");
+    expect(screen.getByLabelText("Delivery address")).toHaveValue("221B Baker Street, London");
+    expect(screen.getByLabelText("Phone number")).toHaveValue("123");
   });
 });

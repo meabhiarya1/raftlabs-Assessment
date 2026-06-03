@@ -7,7 +7,7 @@ import { MenuCard } from "./components/menu/MenuCard.jsx";
 import { OrderTracker } from "./components/tracking/OrderTracker.jsx";
 import { useCart } from "./context/CartContext.jsx";
 import { api } from "./lib/axios.js";
-import { getErrorMessage } from "./lib/format.js";
+import { getErrorMessage, getValidationFieldErrors } from "./lib/format.js";
 
 const TRACKED_ORDER_STORAGE_KEY = "order-management:last-order-id";
 
@@ -21,6 +21,8 @@ export default function App() {
   const [checkoutStatus, setCheckoutStatus] = useState({
     loading: false,
     error: "",
+    fieldErrors: {},
+    completedOrderId: "",
     successMessage: ""
   });
 
@@ -91,6 +93,8 @@ export default function App() {
       setCheckoutStatus({
         loading: false,
         error: "Add at least one menu item before placing the order.",
+        fieldErrors: {},
+        completedOrderId: "",
         successMessage: ""
       });
       return;
@@ -99,6 +103,8 @@ export default function App() {
     setCheckoutStatus({
       loading: true,
       error: "",
+      fieldErrors: {},
+      completedOrderId: "",
       successMessage: ""
     });
 
@@ -123,12 +129,17 @@ export default function App() {
       setCheckoutStatus({
         loading: false,
         error: "",
+        fieldErrors: {},
+        completedOrderId: order.id,
         successMessage: `Order ${order.id.slice(0, 8)} is confirmed and now being tracked live.`
       });
+      loadMenu();
     } catch (error) {
       setCheckoutStatus({
         loading: false,
         error: getErrorMessage(error, "Order could not be placed."),
+        fieldErrors: getValidationFieldErrors(error),
+        completedOrderId: "",
         successMessage: ""
       });
     }
